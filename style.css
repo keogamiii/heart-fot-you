@@ -1,0 +1,308 @@
+/* ---------- палитра: тёмная комната и тёплый свет ---------- */
+
+:root {
+    --bg: #0b0709;
+    --glow: #35121d;
+    --ink: #ffe6ec;
+    --accent: #ff8fa3;
+    --accent-soft: #ffd3dd;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* пульсирующее свечение: красное в центре, к краям уходит в чёрный */
+body::before {
+    content: "";
+    position: fixed;
+    inset: -25%;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(255, 46, 84, 0.55) 0%,
+        rgba(206, 26, 62, 0.4) 14%,
+        rgba(150, 16, 44, 0.28) 28%,
+        rgba(88, 10, 28, 0.17) 44%,
+        rgba(38, 5, 14, 0.08) 62%,
+        transparent 78%
+    );
+    transform-origin: 50% 50%;
+    animation: bg-pulse 3.6s ease-in-out infinite;
+    will-change: transform, opacity;
+}
+
+/* тот же ритм, что у сердца: два удара — сильный и слабый */
+@keyframes bg-pulse {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.72;
+    }
+
+    12% {
+        transform: scale(1.09);
+        opacity: 1;
+    }
+
+    24% {
+        transform: scale(1);
+        opacity: 0.72;
+    }
+
+    36% {
+        transform: scale(1.05);
+        opacity: 0.92;
+    }
+
+    50% {
+        transform: scale(1);
+        opacity: 0.72;
+    }
+}
+
+/* ---------- сцена ---------- */
+
+.scene {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.stage {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+}
+
+/* слой с фразами, вокруг него пульсирует сердце */
+.heart {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    transform-origin: 50% 50%;
+    animation: beat 3.6s ease-in-out infinite;
+}
+
+/* каждая фраза стартует из центра и летит на свою точку контура */
+.phrase {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    white-space: nowrap;
+    font-family: var(--serif);
+    font-style: italic;
+    letter-spacing: 0.02em;
+    color: var(--accent-soft);
+    opacity: var(--op);
+    will-change: transform, opacity;
+    transform:
+        translate(-50%, -50%)
+        translate(var(--tx), var(--ty))
+        rotate(var(--rot));
+    animation: fly 1.35s cubic-bezier(0.18, 0.72, 0.22, 1) both;
+    animation-delay: var(--delay);
+}
+
+@keyframes fly {
+    from {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            translate(var(--sx), var(--sy))
+            rotate(0deg)
+            scale(0.25);
+    }
+
+    10% {
+        opacity: 0.95;
+    }
+
+    to {
+        opacity: var(--op);
+        transform:
+            translate(-50%, -50%)
+            translate(var(--tx), var(--ty))
+            rotate(var(--rot))
+            scale(1);
+    }
+}
+
+/* ---------- слово в центре ---------- */
+
+/* слово живёт в том же ритме, что сердце и фон:
+   анимация стартует вместе со страницей, поэтому фазы совпадают */
+.center {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    transform: translateY(-8dvh);
+    text-shadow:
+        0 0 42px rgba(255, 143, 163, 0.35),
+        0 2px 22px rgba(11, 7, 9, 0.95);
+    animation: name-beat 3.6s ease-in-out infinite;
+}
+
+/* тот же рисунок удара, что у .heart, плюс свечение в такт.
+   translateY держим внутри кейфреймов — иначе он затрётся transform'ом */
+@keyframes name-beat {
+    0%,
+    100% {
+        transform: translateY(-8dvh) scale(1);
+        text-shadow:
+            0 0 42px rgba(255, 143, 163, 0.35),
+            0 2px 22px rgba(11, 7, 9, 0.95);
+    }
+
+    12% {
+        transform: translateY(-8dvh) scale(1.028);
+        text-shadow:
+            0 0 64px rgba(255, 143, 163, 0.55),
+            0 2px 22px rgba(11, 7, 9, 0.95);
+    }
+
+    24% {
+        transform: translateY(-8dvh) scale(1);
+        text-shadow:
+            0 0 42px rgba(255, 143, 163, 0.35),
+            0 2px 22px rgba(11, 7, 9, 0.95);
+    }
+
+    36% {
+        transform: translateY(-8dvh) scale(1.018);
+        text-shadow:
+            0 0 52px rgba(255, 143, 163, 0.45),
+            0 2px 22px rgba(11, 7, 9, 0.95);
+    }
+
+    50% {
+        transform: translateY(-8dvh) scale(1);
+        text-shadow:
+            0 0 42px rgba(255, 143, 163, 0.35),
+            0 2px 22px rgba(11, 7, 9, 0.95);
+    }
+}
+
+.name {
+    margin: 0;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(28px, 8vw, 56px);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    /* снизу запас под хвост «у»: иначе background-clip: text его срезает */
+    padding: 0 0.02em 0.2em;
+    margin: 0 0 -0.2em;
+    background: linear-gradient(180deg, #ffeef2 0%, #c8354f 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* тень и свечение наследуются от .center — он ими пульсирует */
+    animation: appear 1s ease both 0.15s;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.94);
+        filter: blur(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+        filter: blur(0);
+    }
+}
+
+@keyframes beat {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    12% {
+        transform: scale(1.028);
+    }
+
+    24% {
+        transform: scale(1);
+    }
+
+    36% {
+        transform: scale(1.018);
+    }
+
+    50% {
+        transform: scale(1);
+    }
+}
+
+/* ---------- доступность ---------- */
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    /* полёт убираем, но появление оставляем: фразы мягко проявляются
+       на своих местах, и сердце всё равно собирается на глазах.
+       Пульс сердца и фона остаётся — это спокойное «дыхание» */
+    .name {
+        animation: none;
+    }
+
+    .phrase {
+        animation: fade-in 0.45s ease both;
+        animation-delay: var(--delay);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: var(--op);
+    }
+}
+
+/* принудительный полёт даже при включённом reduce-motion: открой ?motion=1 */
+html.force-motion .phrase {
+    animation: fly 1.35s cubic-bezier(0.18, 0.72, 0.22, 1) both;
+    animation-delay: var(--delay);
+}
+
+html.force-motion body::before {
+    animation: bg-pulse 3.6s ease-in-out infinite;
+}
+
+/* телефон лёжа: сердце ниже, слово в центре тоже мельче — не наезжает на фразы */
+@media (max-height: 520px) {
+    .name {
+        font-size: clamp(30px, 6.5vw, 44px);
+    }
+}
